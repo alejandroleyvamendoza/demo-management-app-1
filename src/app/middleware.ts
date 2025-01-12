@@ -9,7 +9,7 @@ const legacyPrefixes = ['/docs', '/blog']
 // }
  
  
-export default async function middleware(req) {
+export default async function middleware(req:any) {
   const { pathname } = req.nextUrl
  
   if (legacyPrefixes.some((prefix) => pathname.startsWith(prefix))) {

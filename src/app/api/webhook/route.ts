@@ -9,8 +9,8 @@ type ResponseData = {
 const { WEBHOOK_VERIFY_TOKEN, API_TOKEN, BUSINESS_PHONE, API_VERSION, PORT } = process.env;
 
 export async function GET(
-    req: NextApiRequest,
-    res: NextApiResponse<ResponseData>
+    req:any,
+    res:any
 ) {
     try {
 
@@ -18,7 +18,7 @@ export async function GET(
 
         const mode = req.query["hub.mode"];
         const token = req.query["hub.verify_token"];
-        const challenge = req.query["hub.challenge"];
+        const challenge: any = req.query["hub.challenge"];
     
         // check the mode and token sent are correct
         if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
