@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import { logOut } from "app/app/lib/actions";
 
 export default function SideMenu({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+    const [state, action, pending] = useActionState(logOut, undefined);
+
 
     const [isShowingMenu, setIsShowingMenu] = useState(false);
     const [isShowingFilters, setIsShowingFilters] = useState(false);
@@ -49,6 +53,15 @@ export default function SideMenu({
                 className={`bg-white fixed top-0 left-20 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 ${isShowingMenu ? 'visible' : 'invisible'}`} aria-label="Sidebar">
                 <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
+                        <li>
+                            <form action={action} className="space-y-6">
+
+
+                                <button className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+                                    <div className="hidden md:block">Sign Out</div>
+                                </button>
+                            </form>
+                        </li>
                         <li>
                             <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">

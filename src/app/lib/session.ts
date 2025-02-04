@@ -57,7 +57,7 @@ export async function deleteSession() {
 
 export async function logout() {
     deleteSession()
-    redirect('/login')
+    redirect('/')
   }
 
 export async function decrypt(session: string | undefined = '') {

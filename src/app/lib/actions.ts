@@ -1,16 +1,15 @@
 'use server';
- 
+
 import { AuthError } from 'next-auth';
-import { signIn } from '../../../auth';
- 
+import { signIn, signOut } from '../../../auth';
+
 // ...
- 
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
   try {
-
     await signIn('credentials', formData);
   } catch (error) {
     if (error instanceof AuthError) {
@@ -23,4 +22,10 @@ export async function authenticate(
     }
     throw error;
   }
+}
+
+export async function logOut(
+  prevState: string | undefined
+) {
+  await signOut({ redirectTo: '/' });
 }

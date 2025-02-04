@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/home';
+  const callbackUrl = searchParams.get('callbackUrl') || '/arco_asesores/dashboard';
   const [state, action, pending] = useActionState(authenticate, undefined);
   return (
 

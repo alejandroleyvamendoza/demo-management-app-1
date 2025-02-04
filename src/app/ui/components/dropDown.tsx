@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from "react";
 import { EmployeeCard } from "./employeeCard";
 
@@ -25,12 +23,11 @@ export default function DropDown() {
             {isShowingSecondDropdown && <EmployeeCard toggleVisibility={toggleVisibilitySecondDropdown} /> }
 
             <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
-                <a onClick={toggleVisibilityMainDropdown}
-                    href="#"
+                <button onClick={toggleVisibilityMainDropdown}
                     className="border-e px-4 py-2 text-sm/none text-gray-600 hover:bg-gray-50 hover:text-gray-700"
                 >
                     Opciones
-                </a>
+                </button>
 
                 <button onClick={toggleVisibilityMainDropdown} className="h-full p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-700">
                     <span className="sr-only">Menu</span>
@@ -54,29 +51,28 @@ export default function DropDown() {
                 role="menu"
             >
                 <div className="p-2">
-                    <a
-                        href="#"
+                    <button
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem"
                     >
                         Editar empleado
-                    </a>
+                    </button>
 
-                    <a onClick={toggleVisibilitySecondDropdown}
-                        href="#"
+                    <button onClick={toggleVisibilitySecondDropdown}
+
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem"
                     >
                         Asignar clientes
-                    </a>
+                    </button>
 
-                    <a
-                        href="#"
+                    <button
+
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem"
                     >
                         Cambiar estado
-                    </a>
+                    </button>
 
                     <form method="POST" action="#">
                         <button
