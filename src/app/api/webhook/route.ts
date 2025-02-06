@@ -15,6 +15,9 @@ const { WEBHOOK_VERIFY_TOKEN, API_TOKEN, BUSINESS_PHONE, API_VERSION, PORT, BASE
 
 export async function GET(req: Request) {
     try {
+
+
+        console.log('req', req)
         const parsedUrl = parse(req.url, true); // Analiza la URL con query params
         const queryParams = parsedUrl.query; // Obtén los query params como un objeto
 
@@ -42,10 +45,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     const body = await req.json();
+
+    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: body', body)
+
     const message = body.entry?.[0]?.changes[0]?.value?.messages?.[0];
     const senderInfo = body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
-
-
 
     if (message) {
         await handleIncomingMessage(message, senderInfo);
@@ -93,16 +97,20 @@ async function handleIncomingMessage(message: any, senderInfo: any) {
 
 function isGreeting(message: any) {
 
+    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', message)
+
+
     if (typeof message === 'string') {
         return true;
     }
 }
 
 async function sendWelcomeMessage(to: any, messageId: any, senderInfo: any) {
+
+    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Bienvenido', {to, messageId, senderInfo});
+
+
     const name = getSenderName(senderInfo);
-
-
-
     const welcomeMessage = `Hola ${name}, Bienvenido a botwhatsapp.`;
     await sendMessage(to, welcomeMessage, messageId);
 }
@@ -112,11 +120,26 @@ function getSenderName(senderInfo: any) {
 }
 
 async function sendMessage(to: any, body: any, messageId: any) {
+    // const data = {
+    //     messaging_product: 'whatsapp',
+    //     to,
+    //     type: 'template',
+    //     template: { // This is now a proper JSON object
+    //         name: "hello_world",
+    //         language: {
+    //             code: "en_US"
+    //         },
+    //     }
+    // };
+
     const data = {
         messaging_product: 'whatsapp',
         to,
         text: { body },
-    };
+      };
+
+
+    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', data)
 
 
 
@@ -127,7 +150,8 @@ async function sendMessage(to: any, body: any, messageId: any) {
 const sendToWhatsApp = async (data: any) => {
     const baseUrl = `${BASE_URL}/${API_VERSION}/${BUSINESS_PHONE}/messages`;
     const headers = {
-        Authorization: `Bearer ${API_TOKEN}`
+        Authorization: `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json' 
     };
 
     try {
@@ -138,9 +162,13 @@ const sendToWhatsApp = async (data: any) => {
             data,
         }
 
-        const response = await axios(obj)
-
-        return response.data;
+        console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: OBJ', obj)
+        
+        
+        const response = await fetch(baseUrl, { method: 'POST', body: JSON.stringify(data), headers,  })
+        
+        console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: RESPONSE', response);
+        return response;
     } catch (error: any) {
     }
 };
@@ -154,9 +182,9 @@ async function sendWelcomeMenu(to: any) {
         {
             type: 'reply', reply: { id: 'add_lastname', title: 'Apellido' }
         },
-        {
-            type: 'reply', reply: { id: 'add_adress', title: 'Colonia' }
-        }
+        // {
+        //     type: 'reply', reply: { id: 'add_adress', title: 'Colonia' }
+        // }
     ];
 
     await sendInteractiveButtons(to, menuMessage, buttons);
@@ -167,6 +195,7 @@ async function sendInteractiveButtons(to: any, bodyText: any, buttons: any) {
         messaging_product: 'whatsapp',
         to,
         type: 'interactive',
+        "recipient_type": "individual", // Important for sending to individuals
         interactive: {
             type: 'button',
             body: { text: bodyText },
