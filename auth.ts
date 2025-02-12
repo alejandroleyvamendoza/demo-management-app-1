@@ -27,14 +27,17 @@ export const { auth, signIn, signOut } = NextAuth(
         callbacks: {
             async jwt({ token, user }) {
 
-                console.log('token', token)
-                console.log('user', user)
+                console.log('::::::::::::::::::::::::::::::::::::::::::::::: user', user)
 
                 if (user) {
                     token.id = user.id;
                     token.email = user.email;
                     token.name = user.name;
+                    token.roleId = user.roleId;
                 }
+
+                console.log('<::::::::::::::::::::::::::::::::::::::::::::::: token', token)
+
 
                 return token;
             },

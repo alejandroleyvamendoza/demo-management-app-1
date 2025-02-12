@@ -1,17 +1,62 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { TableRow } from './employeeTableRow'
+import { ClientTableRow } from './clientTableRow';
 
-export const EmployeeCard = ({ toggleVisibility }: any) => {
+export const EmployeeCard = ({ toggleVisibility, user }: any) => {
+
+    const [clients, setClients] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // const fetchClients = async () => {
+    //     setLoading(true);
+    //     try {
+    //         if (status === "authenticated") {
+
+    //             const response = await fetch('/api/client');
+    //             if (!response.ok) throw new Error("Error al obtener los clientes");
+    //             const data = await response.json();
+    //             setClients(data);
+    //         }
+    //     } catch (err) {
+    //         setError(err.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    useEffect(() => {
+        // if (status === "authenticated") {
+        fetch("/api/client")
+            .then((res) => {
+                console.log(':::::::::::::::::::::::::::::::::', res);
+                if (!res.ok) throw new Error("Error al obtener los clientes");
+                return res.json();
+            })
+            .then((data) => {
+                console.log('::::::::::::::::::::::::::::::::: data', data)
+                setClients(data.data);
+            }).catch((error) => {
+                console.error("Error fetching users:", error);
+
+                setLoading(false);
+
+
+            });
+        // }
+    }, []);
 
     return (
         <div
             className='fixed z-20 inset-0'>
+
             <div className="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
 
             <div
                 // className="absolute inset-0 h-32 w-32 bg-white overflow-hidden rounded-lg border border-gray-100 p-4 sm:p-6 lg:p-8"
-                className={`fixed justify-self-center self-center inset-0 z-10 w-fit overflow-y-auto h-fit bg-white overflow-hidden rounded-lg border border-gray-100 py-3 shadow-sm m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8`}
+                className={`fixed h-3/4 w-fit justify-self-center self-center inset-0 z-10 overflow-y-auto bg-white overflow-hidden rounded-lg border border-gray-100 py-3 shadow-sm m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8`}
             >
-
+                {/* Close Modal */}
                 <div
                     role="button"
                     onClick={() => toggleVisibility()}
@@ -42,11 +87,11 @@ export const EmployeeCard = ({ toggleVisibility }: any) => {
                 </div>
 
 
-                <span
-                    className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"
-                ></span>
+                {/* 
+                    <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span> 
+                */}
 
-                <div className="sm:flex sm:justify-between sm:gap-4">
+                {/* <div className="sm:flex sm:justify-between sm:gap-4">
                     <div>
                         <h3 className="text-lg font-bold text-gray-900 sm:text-xl">
                             Building a SaaS product as a software developer
@@ -81,7 +126,24 @@ export const EmployeeCard = ({ toggleVisibility }: any) => {
                         <dt className="text-sm font-medium text-gray-600">Reading time</dt>
                         <dd className="text-xs text-gray-500">3 minute</dd>
                     </div>
-                </dl>
+                </dl> */}
+
+                <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                    <thead className="ltr:text-left rtl:text-right">
+                        <tr>
+                            <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
+                            <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                            <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
+                        </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-gray-200">
+                        {clients.map((client) => (
+                            <ClientTableRow key={client.id} client={client}></ClientTableRow>
+                        ))}
+                    </tbody>
+                </table>
+
             </div>
         </div>
     )

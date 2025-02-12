@@ -7,7 +7,7 @@ async function getRole(prisma: PrismaClient): Promise<Role | null> {
   try {
     const role = await prisma.role.findUnique({
       where: {
-        name: 'User',
+        name: 'USER',
       },
     })
 
@@ -43,9 +43,6 @@ export async function POST(req: Request) {
     role: { connect: { id: role?.id } },
     status: 'ACTIVE',
   };
-
-  console.log('_________________________________________________________________________________________________________________________ data', data. role);
-
   const user = await prisma.user.create({
     data
   });

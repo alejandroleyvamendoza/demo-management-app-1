@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { EmployeeCard } from "./employeeCard";
+import { ClientCard } from "./clientCard";
 
-export default function DropDown() {
+export default function EmployeeOtionsDropDown() {
 
     const [isShowingMainDropdown, setIsShowingMainDropdown] = useState(false);
 
@@ -20,7 +20,7 @@ export default function DropDown() {
 
         <div className="">
 
-            {isShowingSecondDropdown && <EmployeeCard toggleVisibility={toggleVisibilitySecondDropdown} /> }
+            {isShowingSecondDropdown && <ClientCard toggleVisibility={toggleVisibilitySecondDropdown}  /> }
 
             <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
                 <button onClick={toggleVisibilityMainDropdown}

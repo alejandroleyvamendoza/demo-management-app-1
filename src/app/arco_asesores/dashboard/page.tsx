@@ -4,8 +4,9 @@ import Datepicker from "../../ui/components/datePicker";
 import Search from "../../ui/components/search";
 import SideMenu from "app/app/ui/components/sideMenu";
 import { useSession } from "next-auth/react";
-import { TableRow } from "../../ui/components/tableRow";
+import { EmployeeTableRow } from "../../ui/components/employeeTableRow";
 import { useEffect, useState } from "react";
+import { useAuth } from "app/app/context/authContext";
 
 
 export default function Page() {
@@ -13,10 +14,9 @@ export default function Page() {
     // const { data: session, status } = useSession();
     // const [session, setSession] = useState(null);
 
-    const { data: session, status } = useSession();
-
-
+    // const { data: session, status } = useSession();
     const [users, setUsers] = useState([]);
+    const { status } = useAuth();
 
 
     useEffect(() => {
@@ -68,7 +68,7 @@ export default function Page() {
 
                             <tbody className="divide-y divide-gray-200">
                                 {users.map((user) => (
-                                    <TableRow key={user.id} user={user}></TableRow>
+                                    <EmployeeTableRow key={user.id} user={user}></EmployeeTableRow>
                                 ))}
                             </tbody>
                         </table>

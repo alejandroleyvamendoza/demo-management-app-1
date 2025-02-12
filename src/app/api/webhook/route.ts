@@ -1,7 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
 import { parse } from 'url';
 import { NextResponse } from "next/server";
+import { PrismaClient } from '@prisma/client';
 
 
 
@@ -10,14 +9,38 @@ type ResponseData = {
 }
 
 let appointmentState: any = {};
+const prisma = new PrismaClient();
 
 const { WEBHOOK_VERIFY_TOKEN, API_TOKEN, BUSINESS_PHONE, API_VERSION, PORT, BASE_URL } = process.env;
+
+async function findClient(fromNumber: string) {
+    const user = await prisma.client.findUnique({
+        where: {
+            wa_id: fromNumber,
+        },
+    });
+
+    return user;
+}
+
+async function createClient(name: string, wa_id: string) {
+
+    console.log('name', name)
+    console.log('wa_id', wa_id)
+    const client = await prisma.client.create({
+      data: {
+        name: name + '😂​😂​😂​😂​',
+        wa_id,
+      },
+    });
+    console.log(`Usuario creado con éxito: ${client.id}`);
+  }
 
 export async function GET(req: Request) {
     try {
 
 
-        console.log('req', req)
+        // console.log('req', req)
         const parsedUrl = parse(req.url, true); // Analiza la URL con query params
         const queryParams = parsedUrl.query; // Obtén los query params como un objeto
 
@@ -38,7 +61,7 @@ export async function GET(req: Request) {
         }
 
     } catch (error) {
-        console.error('ERROR!!!!!', error)
+        // console.error('ERROR!!!!!', error)
     }
 
 }
@@ -46,7 +69,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     const body = await req.json();
 
-    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: body', body)
+    // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: body', body)
 
     const message = body.entry?.[0]?.changes[0]?.value?.messages?.[0];
     const senderInfo = body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
@@ -55,7 +78,7 @@ export async function POST(req: Request) {
         await handleIncomingMessage(message, senderInfo);
     }
 
-    
+
     return Response.json({ success: true });
 }
 
@@ -67,11 +90,15 @@ async function handleIncomingMessage(message: any, senderInfo: any) {
 
         fromNumber = message.from.slice(0, 2) + message.from.slice(3);
 
+        const client = await findClient(fromNumber);
 
+        console.log('client', client)
 
-        // if (!findClient(fromNumber)) {
-        //     await this.createClient(senderInfo.profile.name, fromNumber);
-        // }
+        if (client == null) {
+            const response = await createClient(senderInfo.profile.name, fromNumber);
+            console.log('senderInfo.profile.name, fromNumber 😂​😂​😂​😂​', senderInfo.profile.name, fromNumber);
+            console.log('-------------------------------------------------------------------------------------- response ', response);
+        }
 
         if (isGreeting(incomingMessage)) {
             await sendWelcomeMessage(fromNumber, message.id, senderInfo);
@@ -97,7 +124,7 @@ async function handleIncomingMessage(message: any, senderInfo: any) {
 
 function isGreeting(message: any) {
 
-    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', message)
+    // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', message)
 
 
     if (typeof message === 'string') {
@@ -107,7 +134,7 @@ function isGreeting(message: any) {
 
 async function sendWelcomeMessage(to: any, messageId: any, senderInfo: any) {
 
-    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Bienvenido', {to, messageId, senderInfo});
+    // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Bienvenido', { to, messageId, senderInfo });
 
 
     const name = getSenderName(senderInfo);
@@ -136,10 +163,10 @@ async function sendMessage(to: any, body: any, messageId: any) {
         messaging_product: 'whatsapp',
         to,
         text: { body },
-      };
+    };
 
 
-    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', data)
+    // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: isGreeting', data)
 
 
 
@@ -151,7 +178,7 @@ const sendToWhatsApp = async (data: any) => {
     const baseUrl = `${BASE_URL}/${API_VERSION}/${BUSINESS_PHONE}/messages`;
     const headers = {
         Authorization: `Bearer ${API_TOKEN}`,
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json'
     };
 
     try {
@@ -162,12 +189,12 @@ const sendToWhatsApp = async (data: any) => {
             data,
         }
 
-        console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: OBJ', obj)
-        
-        
-        const response = await fetch(baseUrl, { method: 'POST', body: JSON.stringify(data), headers,  })
-        
-        console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: RESPONSE', response);
+        // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: OBJ', obj)
+
+
+        const response = await fetch(baseUrl, { method: 'POST', body: JSON.stringify(data), headers, })
+
+        // console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: RESPONSE', response);
         return response;
     } catch (error: any) {
     }
@@ -177,10 +204,10 @@ async function sendWelcomeMenu(to: any) {
     const menuMessage = "Elige una Opción"
     const buttons = [
         {
-            type: 'reply', reply: { id: 'signup', title: 'Nombre' }
+            type: 'reply', reply: { id: 'signup', title: 'Nombre completo' }
         },
         {
-            type: 'reply', reply: { id: 'add_lastname', title: 'Apellido' }
+            type: 'reply', reply: { id: 'add_lastname', title: 'CURP' }
         },
         // {
         //     type: 'reply', reply: { id: 'add_adress', title: 'Colonia' }
@@ -217,7 +244,7 @@ async function handleMenuOption(to: any, option: any) {
             appointmentState[to] = { step: 'name' }
             response = "¿Cuál es tu nombre?:";
             break;
-          case 'add_lastname':
+        case 'add_lastname':
             appointmentState[to] = { step: 'question' };
             response = "¿Cuál es tu apellido?:";
             break

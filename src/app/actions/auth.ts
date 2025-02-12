@@ -21,7 +21,7 @@ export async function signup(state: FormState, formData: FormData) {
         let result = await fetch('/api/user', { body, method: 'POST' });
 
         if(result.status === 200) {
-            redirect('/home');
+            redirect('/arco_asesores/dashboard');
         }
     }
 

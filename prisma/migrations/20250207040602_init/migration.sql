@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Client" ALTER COLUMN "lastname" DROP NOT NULL,
+ALTER COLUMN "email" DROP NOT NULL,
+ALTER COLUMN "manager_id" DROP NOT NULL;

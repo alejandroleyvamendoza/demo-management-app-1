@@ -1,10 +1,9 @@
 import { TableRowProps } from "app/app/lib/interfaces/TableRowProps";
-import DropDown from "./dropDown";
+import EmployeeOtionsDropDown from "./employeeOtionsDropDown";
 
 
 
-export const TableRow: React.FC<TableRowProps> = ({ user }) => {
-
+export const EmployeeTableRow: React.FC<TableRowProps> = ({ user }) => {
 
     return (
         <tr className="relative">
@@ -13,7 +12,7 @@ export const TableRow: React.FC<TableRowProps> = ({ user }) => {
             <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user.email}</td>
             <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user.roleId}</td>
             <td className="whitespace-nowrap px-4 py-2">
-                <DropDown/>
+                <EmployeeOtionsDropDown/>
             </td>
         </tr>
     );
