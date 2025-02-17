@@ -1,13 +1,15 @@
+import { Role } from "@prisma/client";
 
 export interface IUserDTO {
     id: number;
     name: string;
-    lastname: null | string;
-    password: null | string;
+    lastname?: string;
+    password?: null | string;
     email: string;
-    wa_id: string;
-    roleId: number;
-    managerId: null;
+    wa_id?: string;
+    role?: Role,
+    roleId?: number;
+    managerId?: null;
     status: string;
     createdAt: Date;
     updatedAt: Date;
@@ -15,10 +17,10 @@ export interface IUserDTO {
     updatedBy: null;
 }
 
-export class UserDTO {
+export class UserDTO implements IUserDTO {
     id: number;
     name: string;
-    lastname?: null | string;
+    lastname?: string;
     email: string;
     wa_id?: string;
     roleId?: number;
@@ -30,11 +32,10 @@ export class UserDTO {
     updatedBy: null;
 
 
-
     constructor(
         id: number,
         name: string,
-        lastname: null | string,
+        lastname: string,
         email: string,
         wa_id: string,
         roleId: number,

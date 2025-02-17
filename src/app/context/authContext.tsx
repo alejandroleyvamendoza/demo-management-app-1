@@ -5,46 +5,37 @@ import { usePathname } from "next/navigation";
 
 
 // Crear el contexto
-const AuthContext = createContext({});
+const AppContext: any = createContext({
+  modalVisible: null,
+  setModalVisible: () => { }
+});
 
 // Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { data: session, status } = useSession();
+  const session = useSession();
 
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // Simulamos la obtención de datos de sesión (puedes cambiarlo por una llamada a una API)
-  useEffect(() => {
-    console.log('________________________________________________________________', { status });
+  console.log('====================== AUTHCONTEXT ======================', { session });
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser);
-    }
-    setLoading(false);
-  }, []);
-
-  // Función para iniciar sesión
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
-
-  // Función para cerrar sesión
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
-  const pathname = usePathname();
   return (
-
-    <AuthContext.Provider value={{ user, login, logout, loading, status }}>
+    <AppContext.Provider value={{ user, loading, status: session.status, modalVisible, setModalVisible }}>
       {children}
-    </AuthContext.Provider>
+    </AppContext.Provider>
 
   );
 };
 
 // Hook personalizado para usar el contexto
-export const useAuth = () => useContext(AuthContext);
+export const useAppContext = () => useContext<IAppContext>(AppContext);
+
+interface IAppContext {
+  user: any,
+  login: any,
+  logout: any,
+  loading: any,
+  status: any,
+  modal: boolean
+}

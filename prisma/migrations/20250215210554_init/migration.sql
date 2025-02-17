@@ -5,10 +5,10 @@ CREATE TYPE "Status" AS ENUM ('ACTIVE', 'INACTIVE', 'PENDING', 'DELETED');
 CREATE TABLE "Client" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
-    "lastname" VARCHAR(255) NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
+    "lastname" VARCHAR(255),
+    "email" VARCHAR(255),
     "wa_id" VARCHAR(16) NOT NULL,
-    "manager_id" INTEGER NOT NULL,
+    "manager_id" INTEGER,
     "status" "Status" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -82,6 +82,26 @@ CREATE TABLE "RolePermission" (
     CONSTRAINT "RolePermission_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "UserClient_history" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "clientId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserClient_history_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserClient" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "clientId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserClient_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Client_email_key" ON "Client"("email");
 
@@ -106,6 +126,12 @@ CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "RolePermission_role_id_permission_id_key" ON "RolePermission"("role_id", "permission_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "UserClient_history_userId_clientId_key" ON "UserClient_history"("userId", "clientId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserClient_userId_clientId_key" ON "UserClient"("userId", "clientId");
+
 -- AddForeignKey
 ALTER TABLE "Client" ADD CONSTRAINT "Client_manager_id_fkey" FOREIGN KEY ("manager_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -126,3 +152,15 @@ ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_role_id_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "Permission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserClient_history" ADD CONSTRAINT "UserClient_history_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserClient_history" ADD CONSTRAINT "UserClient_history_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserClient" ADD CONSTRAINT "UserClient_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserClient" ADD CONSTRAINT "UserClient_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE CASCADE ON UPDATE CASCADE;

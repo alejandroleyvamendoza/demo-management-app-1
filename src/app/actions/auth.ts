@@ -12,20 +12,16 @@ export async function signup(state: FormState, formData: FormData) {
         password: formData.get('password'),
     });
     const body = JSON.stringify(validatedFields);
-
+    
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
         }
     } else {
-        let result = await fetch('/api/user', { body, method: 'POST' });
-
+        let result = await fetch('/api/user/signup', { body, method: 'POST' });
         if(result.status === 200) {
             redirect('/arco_asesores/dashboard');
         }
     }
-
-    // const { name, email, password } = validatedFields.data;
-
 
 }

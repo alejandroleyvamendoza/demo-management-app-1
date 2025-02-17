@@ -27,6 +27,7 @@ model Client {
   createdBy   Int?      @map("created_by") // Foreign key opcional explícita
   updatedBy   Int?      @map("updated_by") // Foreign key opcional explícita
   usersToClients UserClient[]
+  usersToClients_history UserClient_history[]
 
 }
 
@@ -51,6 +52,7 @@ model User {
   createdBy   Int?      @map("created_by") // Foreign key opcional explícita
   updatedBy   Int?      @map("updated_by") // Foreign key opcional explícita
   clientsToEmployee UserClient[]
+  clientsToEmployee_history UserClient_history[]
 
 }
 
@@ -98,12 +100,25 @@ model RolePermission {
   @@unique([roleId, permissionId]) // Índice único para evitar duplicados
 }
 
+model UserClient_history {
+  id       Int    @id @default(autoincrement())
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId Int
+  createdAt   DateTime     @default(now())
+
+
+  @@unique([userId, clientId]) // Evita asignaciones duplicadas
+}
+
 model UserClient {
   id       Int    @id @default(autoincrement())
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId Int
+  createdAt   DateTime?     @default(now())
 
   @@unique([userId, clientId]) // Evita asignaciones duplicadas
 }

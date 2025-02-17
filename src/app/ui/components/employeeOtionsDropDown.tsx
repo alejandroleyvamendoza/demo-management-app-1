@@ -1,35 +1,39 @@
 import { useState } from "react";
 import { ClientCard } from "./clientCard";
+import { useAppContext } from "app/app/context/authContext";
 
-export default function EmployeeOtionsDropDown() {
+export default function EmployeeOtionsDropDown({ user, index }) {
 
-    const [isShowingMainDropdown, setIsShowingMainDropdown] = useState(false);
 
-    const toggleVisibilityMainDropdown = () => {
-        setIsShowingMainDropdown(!isShowingMainDropdown);
-    };
-
+    // console.log('user, isShowingMainDropdown', user, func);
 
     const [isShowingSecondDropdown, setIsShowingSecondDropdown] = useState(false);
+    const { modalVisible, setModalVisible } = useAppContext();
+
+    const show = () => {
+        setModalVisible(modalVisible === index ? null : index)
+    };
 
     const toggleVisibilitySecondDropdown = () => {
         setIsShowingSecondDropdown(!isShowingSecondDropdown);
+
     };
 
     return (
 
         <div className="">
 
-            {isShowingSecondDropdown && <ClientCard toggleVisibility={toggleVisibilitySecondDropdown}  /> }
+            {isShowingSecondDropdown && <ClientCard toggleVisibility={toggleVisibilitySecondDropdown} user={user} />}
 
             <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
-                <button onClick={toggleVisibilityMainDropdown}
+                <button onClick={() => show()}
                     className="border-e px-4 py-2 text-sm/none text-gray-600 hover:bg-gray-50 hover:text-gray-700"
                 >
                     Opciones
                 </button>
 
-                <button onClick={toggleVisibilityMainDropdown} className="h-full p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-700">
+                <button onClick={() => show()}
+                    className="h-full p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-700">
                     <span className="sr-only">Menu</span>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +51,7 @@ export default function EmployeeOtionsDropDown() {
             </div>
 
             <div
-                className={`fixed z-10 mt-2 w-56 rounded-md border border-gray-100 bg-white shadow-lg ${isShowingMainDropdown ? 'visible' : 'invisible'}`}
+                className={`fixed z-10 mt-2 w-56 rounded-md border border-gray-100 bg-white shadow-lg ${modalVisible === index ? 'visible' : 'invisible'}`}
                 role="menu"
             >
                 <div className="p-2">

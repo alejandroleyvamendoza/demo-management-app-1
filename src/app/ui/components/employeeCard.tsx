@@ -29,12 +29,10 @@ export const EmployeeCard = ({ toggleVisibility, user }: any) => {
         // if (status === "authenticated") {
         fetch("/api/client")
             .then((res) => {
-                console.log(':::::::::::::::::::::::::::::::::', res);
                 if (!res.ok) throw new Error("Error al obtener los clientes");
                 return res.json();
             })
             .then((data) => {
-                console.log('::::::::::::::::::::::::::::::::: data', data)
                 setClients(data.data);
             }).catch((error) => {
                 console.error("Error fetching users:", error);

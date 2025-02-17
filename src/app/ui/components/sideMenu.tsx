@@ -51,7 +51,7 @@ export default function SideMenu({
 
             <aside id="sidebar-multi-level-sidebar"
                 className={`bg-white fixed top-0 left-20 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 ${isShowingMenu ? 'visible' : 'invisible'}`} aria-label="Sidebar">
-                <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+                <div className="h-full px-3 py-4 overflow-y-auto  dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
                         <li>
                             <form action={action} className="space-y-6">
@@ -194,8 +194,9 @@ export default function SideMenu({
 
 
 
-            <div className="p-4 sm:ml-64">
-                <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700">
+            <div className="p-4 sm:ml-64 sm:mr-64">
+                <div className="p-4"> 
+                {/* // border-2 border-gray-200 rounded-lg dark:border-gray-700"> */}
 
                     {children}
 

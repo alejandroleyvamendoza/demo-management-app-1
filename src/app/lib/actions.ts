@@ -9,10 +9,16 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
+
+  console.log('====================== actions.ts authenticate ======================');
+
   try {
-    await signIn('credentials', formData);
+    console.log('====================== actions.ts USER ======================');
+    const user = await signIn('credentials', formData);
+    console.log('====================== actions.ts USER ======================', { user });
   } catch (error) {
     if (error instanceof AuthError) {
+      console.log('====================== actions.ts AuthError ======================', { error });
       switch (error.type) {
         case 'CredentialsSignin':
           return 'Invalid credentials.';

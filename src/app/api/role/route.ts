@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-let prisma = new PrismaClient();
+import { prisma } from "app/app/module/database";
+import { getUserRole } from "app/app/module/role/repository/roleRepository";
+import { NextRequest } from "next/server";
 
 export async function GET(req: Request) {
-
-    const roles = await prisma.role.findMany();
-
+    console.log('Request', {req});
+    const roles = await getUserRole('User');
     return Response.json({ success: true, data: roles });
 }
 
@@ -15,7 +15,8 @@ export async function POST(req: Request) {
             { name: 'Admin', status: 'ACTIVE' },
             { name: 'Manager', status: 'ACTIVE' },
             { name: 'Employee', status: 'ACTIVE' },
-            { name: 'User', status: 'ACTIVE' },
+            { name: 'Client', status: 'ACTIVE' },
+
         ],
     });
 

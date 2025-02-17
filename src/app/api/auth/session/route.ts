@@ -3,9 +3,10 @@ import { auth } from "../../../../../auth";
 
 export const GET = auth((req) => {
 
-    console.log('req', req.auth)
+    console.log('====================== api/auth/session/route.ts GET ======================', req.auth);
+
     if (req?.auth) {
         return Response.json({ data: req.auth })
     }
-    return Response.json({ message: "Not authenticated" }, { status: 401 })
+    return Response.json({ data: null, message: "Not authenticated" }, { status: 401 })
 })

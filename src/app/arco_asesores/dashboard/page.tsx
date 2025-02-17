@@ -5,77 +5,103 @@ import Search from "../../ui/components/search";
 import SideMenu from "app/app/ui/components/sideMenu";
 import { useSession } from "next-auth/react";
 import { EmployeeTableRow } from "../../ui/components/employeeTableRow";
-import { useEffect, useState } from "react";
-import { useAuth } from "app/app/context/authContext";
-
+import React, { useEffect, useState } from "react";
+import { useAppContext } from "app/app/context/authContext";
+import { createContext } from "vm";
+import { IUserDTO } from "app/app/lib/dto/UserDTO";
 
 export default function Page() {
+    const [shouldAssingUser, setShouldAssingUser] = useState<boolean>();
+    const [usersHasEmployees, setUsersHasEmployees] = useState<boolean>();
+    const [users, setUsers] = useState<IUserDTO[]>([]);
+    const { data, status } = useSession();
 
-    // const { data: session, status } = useSession();
-    // const [session, setSession] = useState(null);
-
-    // const { data: session, status } = useSession();
-    const [users, setUsers] = useState([]);
-    const { status } = useAuth();
-
+    console.log('====================== /dashboard data.session ======================', data, { usersHasEmployees });
 
     useEffect(() => {
-        console.log({ users, status });
-        if (status === "authenticated") {
-            fetch("/api/user")
-                .then((res) => {
-                    console.log(':::::::::::::::::::::::::::::::::', res);
-                    return res.json();
-                })
-                .then((data) => {
-
-                    console.log('::::::::::::::::::::::::::::::::: data', data)
-                    setUsers(data.data);
-                }).catch((error) => console.error("Error fetching users:", error));
-        }
+        let user = data?.data?.user;
+        localStorage.setItem("user", JSON.stringify(user));
+        console.log('====================== /dashboard setSession ======================', user);
+        getUsers('/api/user/manager?manager=' + user?.id);
     }, [status]);
 
 
 
+    const getUsers = (url: string) => {
+        if (status === "authenticated") {
+            fetch(url, {
+                method: 'GET',
+            }).then((res) => {
+                console.log('====================== FETCHING DATA ======================');
+                return res.json();
+            }).then((data) => {
+                console.log('====================== DATA RETRIEVED ======================', data);
+                setUsers(data.data);
+            }).catch((error) => console.error("Error fetching users:", error));
+        }
+    }
+
+    const showUsersToAssign = () => {
+        getUsers('/api/user');
+        setShouldAssingUser(!shouldAssingUser);
+
+
+    }
+
     if (status === "authenticated") {
+
+        console.log('====================== DATA LENGTH ======================', users.length);
 
         return (
             <SideMenu>
-                <div className="relative h-screen">
-                    <div className="flow-root h-fit rounded-lg border border-gray-100 py-3 shadow-sm overflow-x-auto m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8">
+                <div className="relative flex justify-center">
+                    {
+                        users.length > 0 || shouldAssingUser ?
+                            (
+                                <div className="flow-root h-fit rounded-lg border border-gray-100 py-3 shadow-sm overflow-x-auto m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8">
+                                    <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                                        <thead className="ltr:text-left rtl:text-right">
+                                            <tr>
+                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
+                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
+                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Role</th>
+                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>
+                                                <th className="px-4 py-2"></th>
+                                            </tr>
+                                        </thead>
 
-                        {/* Inicia buscador */}
-                        {/* 
-                        <div className="flex">
-                            <Search />
-                            <Datepicker />
-                        </div>
-                        */}
+                                        <tbody className="divide-y divide-gray-200">
+                                            {users.map((user: IUserDTO, index: number) => (
+                                                <EmployeeTableRow key={user.id} index={index} user={user} ></EmployeeTableRow>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                        {/* Inicia tabla */}
+                            )
+                            :
+                            (
+                                <div className="flex flex-col justify-center align-middle items-center">
+                                    <p>El usuario no tiene asesores asignados</p>
+                                    <button onClick={() => showUsersToAssign()} type="button" className="focus:outline-none self-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        Mostrar empleados
+                                    </button>
 
-                        <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-                            <thead className="ltr:text-left rtl:text-right">
-                                <tr>
-                                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
-                                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
-                                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
-                                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Role</th>
-                                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>
-                                    <th className="px-4 py-2"></th>
-                                </tr>
-                            </thead>
 
-                            <tbody className="divide-y divide-gray-200">
-                                {users.map((user) => (
-                                    <EmployeeTableRow key={user.id} user={user}></EmployeeTableRow>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </SideMenu>
+
+
+
+
+
+
+                                </div>
+                            )
+                    }
+                </div >
+            </SideMenu >
         )
+
     } else {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
