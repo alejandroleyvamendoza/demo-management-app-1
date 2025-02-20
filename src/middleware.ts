@@ -50,6 +50,6 @@ export function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
-    '/arco_asesores/:path*', '/api/:path*',
+    '/arco_asesores/:path*', // '/api/:path*',
   ],
 }

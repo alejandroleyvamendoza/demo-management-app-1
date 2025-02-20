@@ -14,111 +14,118 @@ datasource db {
 }
 
 model Client {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(255)
-  lastname    String?    @db.VarChar(255)
-  email       String?    @unique @db.VarChar(255)
-  wa_id       String    @unique @db.VarChar(16)
-  manager     User?      @relation(fields: [managerId], references: [id], onDelete: Cascade)
-  managerId   Int?       @map("manager_id") // Foreign key explícita
-  status      Status    @default(ACTIVE)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?  @updatedAt
-  createdBy   Int?      @map("created_by") // Foreign key opcional explícita
-  updatedBy   Int?      @map("updated_by") // Foreign key opcional explícita
-  usersToClients UserClient[]
+  id                     Int                  @id @default(autoincrement())
+  name                   String               @db.VarChar(255)
+  lastname               String?              @db.VarChar(255)
+  email                  String?              @unique @db.VarChar(255)
+  wa_id                  String               @unique @db.VarChar(16)
+  manager                User?                @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  managerId              Int?                 @map("manager_id") // Foreign key explícita
+  status                 Status               @default(ACTIVE)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime?            @updatedAt
+  createdBy              Int?                 @map("created_by") // Foreign key opcional explícita
+  updatedBy              Int?                 @map("updated_by") // Foreign key opcional explícita
+  usersToClients         UserClient[]
   usersToClients_history UserClient_history[]
+}
 
+model Profile {
+  id       Int     @id @default(autoincrement())
+  username    String  @db.VarChar(80)
+  password String? @db.VarChar(80)
+  user User?
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(80)
-  lastname    String?   @db.VarChar(80)
-  password    String?    @db.VarChar(80)
-  email       String    @unique @db.VarChar(80)
-  wa_id       String?    @unique @db.VarChar(16)
-  role        Role?      @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId      Int?       @map("role_id") // Foreign key explícita
-  clients     Client[]
-  manager     User?     @relation("ManagerRelation", fields: [managerId], references: [id], onDelete: SetNull)
-  managerId   Int?      @map("manager_id") // Foreign key explícita
-  employees   User[]    @relation("ManagerRelation") // Relación inversa para managers
-  managedBy   UserRelationship[] @relation("EmployeeRelation") // Relación inversa para UserRelationship (empleados)
-  manages     UserRelationship[] @relation("ManagerRelation")  // Relación inversa para UserRelationship (managers)
-  status      Status    @default(ACTIVE)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?  @updatedAt
-  createdBy   Int?      @map("created_by") // Foreign key opcional explícita
-  updatedBy   Int?      @map("updated_by") // Foreign key opcional explícita
-  clientsToEmployee UserClient[]
-  clientsToEmployee_history UserClient_history[]
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(80)
+  lastname String? @db.VarChar(80)
+  email    String  @unique @db.VarChar(80)
+  wa_id    String? @unique @db.VarChar(16)
+  role     Role?   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId   Int?    @map("role_id") // Foreign key explícita
 
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int?     @unique @map("profile_id") // Foreign key explícita
+
+  clients                   Client[]
+  manager                   User?                @relation("ManagerRelation", fields: [managerId], references: [id], onDelete: SetNull)
+  managerId                 Int?                 @map("manager_id") // Foreign key explícita
+  employees                 User[]               @relation("ManagerRelation") // Relación inversa para managers
+  managedBy                 UserRelationship[]   @relation("EmployeeRelation") // Relación inversa para UserRelationship (empleados)
+  manages                   UserRelationship[]   @relation("ManagerRelation") // Relación inversa para UserRelationship (managers)
+  status                    Status               @default(ACTIVE)
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime?            @updatedAt
+  createdBy                 Int?                 @map("created_by") // Foreign key opcional explícita
+  updatedBy                 Int?                 @map("updated_by") // Foreign key opcional explícita
+  clientsToEmployee         UserClient[]
+  clientsToEmployee_history UserClient_history[]
 }
 
 model UserRelationship {
-  id          Int       @id @default(autoincrement())
-  employee    User      @relation("EmployeeRelation", fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId  Int       @map("employee_id") // Foreign key explícita
-  manager     User      @relation("ManagerRelation", fields: [managerId], references: [id], onDelete: Cascade)
-  managerId   Int       @map("manager_id") // Foreign key explícita
+  id         Int  @id @default(autoincrement())
+  employee   User @relation("EmployeeRelation", fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId Int  @map("employee_id") // Foreign key explícita
+  manager    User @relation("ManagerRelation", fields: [managerId], references: [id], onDelete: Cascade)
+  managerId  Int  @map("manager_id") // Foreign key explícita
 
   @@unique([employeeId, managerId]) // Índice único para evitar duplicados
 }
 
 model Permission {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  description String    @db.VarChar(255)
-  status      Status    @default(ACTIVE)
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String           @db.VarChar(255)
+  status          Status           @default(ACTIVE)
   rolePermissions RolePermission[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?  @updatedAt
-  createdBy   Int?      @map("created_by") // Foreign key opcional explícita
-  updatedBy   Int?      @map("updated_by") // Foreign key opcional explícita
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime?        @updatedAt
+  createdBy       Int?             @map("created_by") // Foreign key opcional explícita
+  updatedBy       Int?             @map("updated_by") // Foreign key opcional explícita
 }
 
 model Role {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
   users       User[]
   permissions RolePermission[]
-  status      Status       @default(ACTIVE)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?     @updatedAt
-  createdBy   Int?         @map("created_by") // Foreign key opcional explícita
-  updatedBy   Int?         @map("updated_by") // Foreign key opcional explícita
+  status      Status           @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime?        @updatedAt
+  createdBy   Int?             @map("created_by") // Foreign key opcional explícita
+  updatedBy   Int?             @map("updated_by") // Foreign key opcional explícita
 }
 
 model RolePermission {
-  id           Int         @id @default(autoincrement())
-  role         Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId       Int         @map("role_id") // Foreign key explícita
-  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  permissionId Int         @map("permission_id") // Foreign key explícita
+  id           Int        @id @default(autoincrement())
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId       Int        @map("role_id") // Foreign key explícita
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId Int        @map("permission_id") // Foreign key explícita
 
   @@unique([roleId, permissionId]) // Índice único para evitar duplicados
 }
 
 model UserClient_history {
-  id       Int    @id @default(autoincrement())
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   Int
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId Int
-  createdAt   DateTime     @default(now())
-
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId  Int
+  createdAt DateTime @default(now())
 
   @@unique([userId, clientId]) // Evita asignaciones duplicadas
 }
 
 model UserClient {
-  id       Int    @id @default(autoincrement())
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   Int
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId Int
-  createdAt   DateTime?     @default(now())
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId  Int
+  createdAt DateTime? @default(now())
 
   @@unique([userId, clientId]) // Evita asignaciones duplicadas
 }

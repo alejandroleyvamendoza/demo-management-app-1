@@ -19,14 +19,23 @@ CREATE TABLE "Client" (
 );
 
 -- CreateTable
+CREATE TABLE "Profile" (
+    "id" SERIAL NOT NULL,
+    "username" VARCHAR(80) NOT NULL,
+    "password" VARCHAR(80),
+
+    CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(80) NOT NULL,
     "lastname" VARCHAR(80),
-    "password" VARCHAR(80),
     "email" VARCHAR(80) NOT NULL,
     "wa_id" VARCHAR(16),
     "role_id" INTEGER,
+    "profile_id" INTEGER,
     "manager_id" INTEGER,
     "status" "Status" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -115,6 +124,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_wa_id_key" ON "User"("wa_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_profile_id_key" ON "User"("profile_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserRelationship_employee_id_manager_id_key" ON "UserRelationship"("employee_id", "manager_id");
 
 -- CreateIndex
@@ -137,6 +149,9 @@ ALTER TABLE "Client" ADD CONSTRAINT "Client_manager_id_fkey" FOREIGN KEY ("manag
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "Profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_manager_id_fkey" FOREIGN KEY ("manager_id") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

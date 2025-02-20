@@ -9,7 +9,6 @@ export async function GET(req: Request) {
     include: {
       manager: {
         omit: {
-          password: true,
           createdAt: true,
           createdBy: true,
           roleId: true,

@@ -4,17 +4,20 @@ import Datepicker from "../../ui/components/datePicker";
 import Search from "../../ui/components/search";
 import SideMenu from "app/app/ui/components/sideMenu";
 import { useSession } from "next-auth/react";
-import { EmployeeTableRow } from "../../ui/components/employeeTableRow";
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "app/app/context/authContext";
 import { createContext } from "vm";
 import { IUserDTO } from "app/app/lib/dto/UserDTO";
+import { UserTableRow } from "app/app/ui/components/employeeTableRow";
+import EmployeeOtionsDropDown from "app/app/ui/components/employeeOtionsDropDown";
+import { IUser } from "app/app/module/role/repository/interfaces";
+import { EmployeesTable } from "app/app/ui/components/EmployeesTable";
 
 export default function Page() {
     const [shouldAssingUser, setShouldAssingUser] = useState<boolean>();
     const [usersHasEmployees, setUsersHasEmployees] = useState<boolean>();
-    const [users, setUsers] = useState<IUserDTO[]>([]);
     const { data, status } = useSession();
+    const { users, setUsers} = useAppContext();
 
     console.log('====================== /dashboard data.session ======================', data, { usersHasEmployees });
 
@@ -44,8 +47,6 @@ export default function Page() {
     const showUsersToAssign = () => {
         getUsers('/api/user');
         setShouldAssingUser(!shouldAssingUser);
-
-
     }
 
     if (status === "authenticated") {
@@ -58,27 +59,53 @@ export default function Page() {
                     {
                         users.length > 0 || shouldAssingUser ?
                             (
-                                <div className="flow-root h-fit rounded-lg border border-gray-100 py-3 shadow-sm overflow-x-auto m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8">
-                                    <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-                                        <thead className="ltr:text-left rtl:text-right">
-                                            <tr>
-                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
-                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
-                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
-                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Role</th>
-                                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>
-                                                <th className="px-4 py-2"></th>
-                                            </tr>
-                                        </thead>
+                                // <div className="flow-root h-fit rounded-lg border border-gray-100 py-3 shadow-sm overflow-x-auto m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8">
+                                //     <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                                //         <thead className="ltr:text-left rtl:text-right">
+                                //             <tr>
+                                //                 <th className="bg-whitespace-nowrap px-4 py-2 font-medium text-gray-900">Asignar</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Role</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Manager</th>
+                                //                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>
+                                //                 <th className="px-4 py-2"></th>
+                                //             </tr>
+                                //         </thead>
 
-                                        <tbody className="divide-y divide-gray-200">
-                                            {users.map((user: IUserDTO, index: number) => (
-                                                <EmployeeTableRow key={user.id} index={index} user={user} ></EmployeeTableRow>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                //         <tbody className="divide-y divide-gray-200">
+                                //             {users.map((user: IUserDTO, index: number) => (
+                                //                 <tr key={user.id} className="relative">
+                                //                     <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
 
+                                //                         <input
+                                //                             className=
+                                //                             "whitespace-nowrap px-4 py-2 font-medium text-gray-900"
+                                //                             // "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                //                             type="checkbox"
+                                //                             checked={selectedUsers.includes(user)}
+                                //                             value=""
+                                //                             id={`user-${user.id}`}
+                                //                             onChange={() => handleCheckbox(user)}
+                                //                         />
+                                //                         <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"></label>
+
+                                //                     </td>
+                                //                     <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{user.id}</td>
+                                //                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">{`${user.name} ${user.lastname}`}</td>
+                                //                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user.email}</td>
+                                //                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user?.role?.name}</td>
+                                //                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user?.manager?.name}</td>
+                                //                     <td className="whitespace-nowrap px-4 py-2">
+                                //                         <EmployeeOtionsDropDown user={user} index={index} />
+                                //                     </td>
+                                //                 </tr>
+                                //             ))}
+                                //         </tbody>
+                                //     </table>
+                                // </div>
+                                <EmployeesTable users={users} showButtonOptions={true} />
                             )
                             :
                             (

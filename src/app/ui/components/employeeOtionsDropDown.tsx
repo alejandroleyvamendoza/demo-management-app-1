@@ -1,29 +1,41 @@
 import { useState } from "react";
-import { ClientCard } from "./clientCard";
 import { useAppContext } from "app/app/context/authContext";
+import { ClientCard } from "./clientCard";
+import { EmployeeCard } from "./employeeCard";
 
-export default function EmployeeOtionsDropDown({ user, index }) {
+export default function EmployeeOtionsDropDown({ users, user, index }) {
 
 
     // console.log('user, isShowingMainDropdown', user, func);
 
-    const [isShowingSecondDropdown, setIsShowingSecondDropdown] = useState(false);
+    const [showClientsCard, setShowClientsCard] = useState(false);
+    const [showEmployeesCard, setShowEmployeesCard] = useState(false);
     const { modalVisible, setModalVisible } = useAppContext();
 
     const show = () => {
         setModalVisible(modalVisible === index ? null : index)
     };
 
-    const toggleVisibilitySecondDropdown = () => {
-        setIsShowingSecondDropdown(!isShowingSecondDropdown);
+    const toggleVisibilityClientsCard = () => {
 
+        console.log('♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠')
+
+        setShowClientsCard(!showClientsCard);
+    };
+    
+    const toggleVisibilityEmployeesCard = () => {
+
+        console.log('▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲')
+
+        setShowEmployeesCard(!showEmployeesCard);
     };
 
     return (
 
         <div className="">
 
-            {isShowingSecondDropdown && <ClientCard toggleVisibility={toggleVisibilitySecondDropdown} user={user} />}
+            {showClientsCard && <ClientCard toggleVisibility={toggleVisibilityClientsCard} users={users} user={user} />}
+            {showEmployeesCard && <EmployeeCard toggleVisibility={toggleVisibilityEmployeesCard} users={users} user={user} />}
 
             <div className="inline-flex items-center overflow-hidden rounded-md border bg-white">
                 <button onClick={() => show()}
@@ -62,7 +74,7 @@ export default function EmployeeOtionsDropDown({ user, index }) {
                         Editar empleado
                     </button>
 
-                    <button onClick={toggleVisibilitySecondDropdown}
+                    <button onClick={toggleVisibilityClientsCard}
 
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem"
@@ -70,12 +82,12 @@ export default function EmployeeOtionsDropDown({ user, index }) {
                         Asignar clientes
                     </button>
 
-                    <button
+                    <button onClick={toggleVisibilityEmployeesCard}
 
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem"
                     >
-                        Cambiar estado
+                        Asignar empleados
                     </button>
 
                     <form method="POST" action="#">
@@ -98,8 +110,7 @@ export default function EmployeeOtionsDropDown({ user, index }) {
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                 />
                             </svg>
-
-                            Delete Product
+                            Eliminar empleado
                         </button>
                     </form>
                 </div>

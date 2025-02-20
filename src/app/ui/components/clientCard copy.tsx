@@ -1,13 +1,41 @@
 import React, { useEffect, useState } from 'react'
-import { TableRow } from './employeeTableRow'
-import { ClientTableRow } from './clientTableRow';
-import { EmployeesTable } from './EmployeesTable';
+import { useAppContext } from 'app/app/context/authContext';
+import { IClient } from 'app/app/module/role/repository/interfaces';
+import { ClientsTable } from './ClientsTable';
 
-export const EmployeeCard = ({ toggleVisibility, user, users }: any) => {
+export const ClientCard = ({ toggleVisibility, user }: any) => {
 
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { status } = useAppContext();
+
+
+    useEffect(() => {
+
+        console.log('====================== ClientCard ======================', { status });
+
+        if (status === "authenticated") {
+
+            console.log('====================== ClientCard AUTHENTICATED ======================');
+
+            fetch("/api/client")
+                .then((res) => {
+
+                    console.log('====================== ClientCard FETCHING DATA ======================');
+
+                    if (!res.ok) throw new Error("Error al obtener los clientes");
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log('====================== ClientCard FETCHING DATA ======================', { data });
+                    setClients(data.data);
+                }).catch((error) => {
+                    console.error("Error fetching users:", error);
+                    setLoading(false);
+                });
+        }
+    }, []);
 
     return (
         <div
@@ -19,7 +47,7 @@ export const EmployeeCard = ({ toggleVisibility, user, users }: any) => {
                     // className="absolute inset-0 h-32 w-32 bg-white overflow-hidden rounded-lg border border-gray-100 p-4 sm:p-6 lg:p-8"
                     className={`fixed h-2/3 w-fit justify-self-center self-center inset-0 z-10  bg-white  rounded-lg border border-gray-100 py-3 shadow-sm m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8`}
                 >
-                    <h2>Asignar Empleado al Manager - {user.name} {user.lastname}</h2>
+                    <h2>Asignar Cliente al Asesor - {user.name} {user.lastname} </h2>
                     {/* Close Modal */}
                     <div
                         role="button"
@@ -49,9 +77,11 @@ export const EmployeeCard = ({ toggleVisibility, user, users }: any) => {
                             </button>
                         </span>
                     </div>
-                    <EmployeesTable users={users} showButtonOptions={false} />
+                    <ClientsTable user={user} clients={clients} />
                 </div>
             </section>
         </div>
     )
 }
+
+
