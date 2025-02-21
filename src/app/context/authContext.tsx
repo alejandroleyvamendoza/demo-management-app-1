@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 // Hook personalizado para usar el contexto
 export const useAppContext = () => useContext<IAppContext>(AppContext);
 
-interface IAppContext {
+export interface IAppContext {
   user: IUser,
   setUser: React.Dispatch<React.SetStateAction<IUser>>,
   users: IUser[],

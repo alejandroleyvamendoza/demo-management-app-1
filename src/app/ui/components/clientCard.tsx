@@ -10,9 +10,6 @@ export const ClientCard = ({ toggleVisibility, user }: any) => {
     const [error, setError] = useState(null);
     const { status } = useAppContext();
 
-
-
-
     useEffect(() => {
 
         console.log('====================== ClientCard ======================', { status });

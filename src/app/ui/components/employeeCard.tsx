@@ -49,7 +49,7 @@ export const EmployeeCard = ({ toggleVisibility, user, users }: any) => {
                             </button>
                         </span>
                     </div>
-                    <EmployeesTable users={users} showButtonOptions={false} />
+                    {users !== null && (<EmployeesTable users={users} showDropDownOptions={false} showAssignButtons={true} />)}
                 </div>
             </section>
         </div>

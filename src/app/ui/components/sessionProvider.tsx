@@ -7,7 +7,7 @@ import { AuthProvider } from './../../context/authContext';
 
 export default function SessionProvider({ children }) {
     const pathname = usePathname();
-    const isLoginPage = pathname === "/login" || pathname === '/';
+    const isLoginPage = pathname === "/login" || pathname === '/signup' || pathname === '/' ;
 
     return isLoginPage ? children : <Provider><AuthProvider>{children}</AuthProvider></Provider>
 }

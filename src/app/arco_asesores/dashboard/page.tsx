@@ -5,7 +5,7 @@ import Search from "../../ui/components/search";
 import SideMenu from "app/app/ui/components/sideMenu";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "app/app/context/authContext";
+import { IAppContext, useAppContext } from "app/app/context/authContext";
 import { createContext } from "vm";
 import { IUserDTO } from "app/app/lib/dto/UserDTO";
 import { UserTableRow } from "app/app/ui/components/employeeTableRow";
@@ -17,7 +17,7 @@ export default function Page() {
     const [shouldAssingUser, setShouldAssingUser] = useState<boolean>();
     const [usersHasEmployees, setUsersHasEmployees] = useState<boolean>();
     const { data, status } = useSession();
-    const { users, setUsers} = useAppContext();
+    const { users, setUsers } = useAppContext();
 
     console.log('====================== /dashboard data.session ======================', data, { usersHasEmployees });
 
@@ -25,7 +25,7 @@ export default function Page() {
         let user = data?.data?.user;
         localStorage.setItem("user", JSON.stringify(user));
         console.log('====================== /dashboard setSession ======================', user);
-        getUsers('/api/user/manager?manager=' + user?.id);
+        getUsers('/api/user?manager=' + user?.id);
     }, [status]);
 
 
@@ -51,13 +51,14 @@ export default function Page() {
 
     if (status === "authenticated") {
 
-        console.log('====================== DATA LENGTH ======================', users.length);
+        console.log('====================== DATA LENGTH ======================', users);
 
+        const existUsers = users !== null ? (<EmployeesTable users={users} showDropDownOptions={true} showAssignButtons={false} />): (<p>No existen empleados por mostrar</p> );
         return (
             <SideMenu>
-                <div className="relative flex justify-center">
+                <div className="relative flex justify-center h-screen">
                     {
-                        users.length > 0 || shouldAssingUser ?
+                        users?.length > 0 || shouldAssingUser ?
                             (
                                 // <div className="flow-root h-fit rounded-lg border border-gray-100 py-3 shadow-sm overflow-x-auto m-4 sm:m-6 lg:m-8 p-4 sm:p-6 lg:p-8">
                                 //     <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
@@ -105,7 +106,7 @@ export default function Page() {
                                 //         </tbody>
                                 //     </table>
                                 // </div>
-                                <EmployeesTable users={users} showButtonOptions={true} />
+                                existUsers
                             )
                             :
                             (
@@ -114,14 +115,6 @@ export default function Page() {
                                     <button onClick={() => showUsersToAssign()} type="button" className="focus:outline-none self-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                         Mostrar empleados
                                     </button>
-
-
-
-
-
-
-
-
                                 </div>
                             )
                     }
