@@ -55,7 +55,7 @@ export default function Page() {
 
         const existUsers = users !== null ? (<EmployeesTable users={users} showDropDownOptions={true} showAssignButtons={false} />): (<p>No existen empleados por mostrar</p> );
         return (
-            <SideMenu>
+            // <SideMenu>
                 <div className="relative flex justify-center h-screen">
                     {
                         users?.length > 0 || shouldAssingUser ?
@@ -119,7 +119,7 @@ export default function Page() {
                             )
                     }
                 </div >
-            </SideMenu >
+            // </SideMenu >
         )
 
     } else {

@@ -1,3 +1,17 @@
+import { Session } from "next-auth";
+
+export interface IToken {
+    id: number;
+    email: string;
+    name: string;
+    role: string | undefined;
+}
+
+export interface IAuthJWT {
+    token: IToken;
+    user: IUser;
+}
+
 export enum Status {
     ACTIVE = "ACTIVE",
     INACTIVE = "INACTIVE",
@@ -25,7 +39,7 @@ export interface IClient {
 export interface IProfile {
     id: number;
     username: string;
-    password?: string;
+    password: string;
     user?: IUser;
 }
 
@@ -37,7 +51,7 @@ export interface IUser {
     wa_id?: string;
     role?: IRole;
     roleId?: number;
-    profile?: IProfile;
+    profile: IProfile;
     profileId?: number;
     clients: IClient[];
     manager?: IUser;

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { IUser } from "../module/role/repository/interfaces";
 import { IUser } from 'app/app/module/role/repository/interfaces';
+import { Session } from "next-auth";
 
 
 // Crear el contexto
@@ -18,14 +19,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const session = useSession();
+  const session = useSession<boolean>();
 
   const [modalVisible, setModalVisible] = useState(false);
 
   console.log('====================== AUTHCONTEXT ======================', { session });
 
   return (
-    <AppContext.Provider value={{ user, setUser, users, setUsers, loading, status: session.status, modalVisible, setModalVisible }}>
+    <AppContext.Provider value={{ user, setUser, users, setUsers, loading, session, status: session.status, modalVisible, setModalVisible }}>
       {children}
     </AppContext.Provider>
 
@@ -45,4 +46,5 @@ export interface IAppContext {
   loading: any,
   status: any,
   modal: boolean
+  session: any
 }

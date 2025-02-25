@@ -6,7 +6,6 @@ import { User } from "@prisma/client";
 
 export async function getUsers(managerId: number) {
     let users;
-    console.log('¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ managerId', managerId)
 
     if (managerId) {
         users = await prisma.user.findMany({
@@ -19,9 +18,6 @@ export async function getUsers(managerId: number) {
 
     return users;
 }
-
-
-
 
 export async function createUser(req: Request) {
     const body = await req.json();

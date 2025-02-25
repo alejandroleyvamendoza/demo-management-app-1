@@ -1,22 +1,25 @@
 import { useState } from "react";
 import EmployeeOtionsDropDown from "./employeeOtionsDropDown";
 import { IUser } from "app/app/module/role/repository/interfaces";
+import { useAppContext } from "app/app/context/authContext";
 
 export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }) => {
 
     const [selectedUsers, setSelectedUsers] = useState<IUser[]>([]);
     const [selectAll, setSelectAll] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { session } = useAppContext();
+
 
     const handleSelectAllChange = () => {
         console.log('selectAll', selectAll);
         setSelectAll(!selectAll);
         setSelectedUsers(selectAll ? [] : users?.map((user: IUser) => user));
-    };
+    }; 
 
     const assignEmployeeToManager = () => {
 
-        console.log('====================== ClientCard selectedClients ======================', { selectedClients, user });
+        console.log('====================== EmployeeCard selectedUsers ======================', { selectedUsers, users, user: session.data.data.user });
 
         if (selectedUsers) {
 
@@ -25,7 +28,7 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ data: { clients: selectedUsers, user }, }),
+                body: JSON.stringify({ data: { users: selectedUsers, user: session.data.data.user }, }),
             }).then((res) => {
                 if (!res.ok) throw new Error("Error al relacionar Empleado con manager");
                 return res.json();

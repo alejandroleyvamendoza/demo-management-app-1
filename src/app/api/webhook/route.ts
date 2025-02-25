@@ -24,14 +24,13 @@ async function findClient(fromNumber: string) {
 }
 
 async function createClient(name: string, wa_id: string) {
-
     const client = await prisma.client.create({
-      data: {
-        name: name + '😂​😂​😂​😂​',
-        wa_id,
-      },
+        data: {
+            name: name + '😂​😂​😂​😂​',
+            wa_id,
+        },
     });
-  }
+}
 
 export async function GET(req: Request) {
     try {
@@ -43,11 +42,7 @@ export async function GET(req: Request) {
         const token = queryParams["hub.verify_token"];
         const challenge: any = queryParams["hub.challenge"];
 
-
-
-        // check the mode and token sent are correct
         if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
-            // respond with 200 OK and challenge token from the request
             return new Response(challenge);
         } else {
             // respond with '403 Forbidden' if verify tokens do not match
@@ -55,22 +50,29 @@ export async function GET(req: Request) {
         }
 
     } catch (error) {
+        console.error('Error: WebHook - GET - ', error);
+        throw new Error('Error: WebHook - GET - ' + error);
     }
 
 }
 
 export async function POST(req: Request) {
-    const body = await req.json();
+    try {
+        const body = await req.json();
 
-    const message = body.entry?.[0]?.changes[0]?.value?.messages?.[0];
-    const senderInfo = body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
+        const message = body.entry?.[0]?.changes[0]?.value?.messages?.[0];
+        const senderInfo = body.entry?.[0]?.changes[0]?.value?.contacts?.[0];
 
-    if (message) {
-        await handleIncomingMessage(message, senderInfo);
+        if (message) {
+            await handleIncomingMessage(message, senderInfo);
+        }
+
+        return Response.json({ success: true });
+
+    } catch (error) {
+        console.error('Error: WebHook - POST - ', error);
+        throw new Error('Error: WebHook - POST - ' + error);
     }
-
-
-    return Response.json({ success: true });
 }
 
 async function handleIncomingMessage(message: any, senderInfo: any) {
@@ -110,9 +112,6 @@ async function handleIncomingMessage(message: any, senderInfo: any) {
 }
 
 function isGreeting(message: any) {
-
-
-
     if (typeof message === 'string') {
         return true;
     }

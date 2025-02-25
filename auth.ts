@@ -3,18 +3,19 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { IAuthJWT, IUser } from './src/app/module/role/repository/interfaces';
 
-async function getUser(email: string): Promise<User | null> {
+async function getUser(email: string): Promise<IUser | null> {
     const prisma = new PrismaClient();
     try {
-        const user = await prisma.user.findUnique({
+        const user: IUser = await prisma.user.findUnique({
             where: {
                 email,
             },
-            include: { role: true }
-        })
-        return user;
+            include: { role: true, profile: true }
+        }) as IUser;
 
+        return user;
     } catch (error) {
         console.error('Failed to fetch user:', error);
         throw new Error('Failed to fetch user.');
@@ -24,7 +25,7 @@ async function getUser(email: string): Promise<User | null> {
 export const { auth, signIn, signOut } = NextAuth(
     {
         callbacks: {
-            async jwt({ token, user }) {
+            async jwt({ token, user }: IAuthJWT) {
 
                 console.log('====================== auth.ts jwt ======================', user);
 
@@ -35,7 +36,7 @@ export const { auth, signIn, signOut } = NextAuth(
                     token.role = user?.role?.name
                 }
 
-                console.log(' ::::: user :::::', user);
+                console.log(' ::::: user :::::', {user, token});
                 return token;
             },
             async session({ session, token }) {
@@ -51,7 +52,7 @@ export const { auth, signIn, signOut } = NextAuth(
                     };
                 }
 
-                console.log('::::: session :::::', session);
+                console.log('Backend ::::: session :::::', session);
 
                 return session;
             },
@@ -64,24 +65,30 @@ export const { auth, signIn, signOut } = NextAuth(
             Credentials({
                 async authorize(credentials) {
 
-                    console.log('====================== auth.ts Credentials authorize ======================');
+                    try {
+                        console.log('====================== auth.ts Credentials authorize ======================');
 
-                    console.log('::::: Credentials :::::', credentials);
-
-                    const parsedCredentials = z
+                        console.log('::::: Credentials :::::', credentials);
+                        
+                        const parsedCredentials = z
                         .object({ email: z.string().email(), password: z.string().min(6) })
                         .safeParse(credentials);
-
-                    if (!parsedCredentials.success) return null;
-
-                    const { email, password } = parsedCredentials.data;
-                    const user = await getUser(email);
-                    if (!user) return null;
-
-                    const passwordsMatch = await bcrypt.compare(password, user.password || '');
-                    if (!passwordsMatch) return null;
-
-                    return user;
+                        
+                        console.log('::::: parsedCredentials :::::', parsedCredentials);
+                        
+                        if (!parsedCredentials.success) return null;
+    
+                        const { email, password } = parsedCredentials.data;
+                        const user: IUser | null = await getUser(email);
+                        if (!user) return null;
+    
+                        const passwordsMatch = await bcrypt.compare(password, user.profile.password);
+                        if (!passwordsMatch) return null;
+    
+                        return user;
+                    } catch (error) {
+                        
+                    }
                 },
             }),
 
