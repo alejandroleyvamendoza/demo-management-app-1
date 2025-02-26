@@ -1,36 +1,106 @@
-'use client'
+'use client';
 
-import { useActionState } from 'react'
-import { InputContainer } from './components/inputContainer';
+import { useActionState, useEffect, useState } from 'react';
 import { authenticate } from '../lib/actions';
+import { signup } from '../actions/auth';
 import { useSearchParams } from 'next/navigation';
+import { InputContainer } from './components/inputContainer';
+import { Message } from './components/message';
+import { Loader2, UserPlus, LogIn } from 'lucide-react'; // Íconos para mejorar UI
 
-export default function LoginForm() {
+export interface AuthResult {
+  message: string;
+  type: 'INVALID_CREDENTIALS' | 'SERVER_ERROR' | 'SUCCESS' | null;
+}
+
+interface AuthFormProps {
+  type: 'login' | 'signup';
+}
+
+export default function AuthForm({ type }: AuthFormProps) {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/arco_asesores/dashboard';
-  const [state, action, pending] = useActionState(authenticate, undefined);
 
-  
+  const [state, action, pending] = useActionState<AuthResult, FormData>(
+    type === 'login' ? authenticate : signup,
+    { message: '', type: null }
+  );
+
+  const [showMessage, setShowMessage] = useState(state.type !== null);
+
+  useEffect(() => {
+    if (state.type !== null) {
+      setShowMessage(true);
+      const timer = setTimeout(() => setShowMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [state]);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    lastname: '',
+    email: '',
+    wa_id: '',
+    password: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setShowMessage(false);
+  };
+
   return (
-
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Inicia Sesión con tu cuenta
+    <div className="flex min-h-screen flex-col justify-center items-center bg-gray-100 px-6">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <h2 className="text-center text-3xl font-bold text-gray-900">
+          {type === 'login' ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}
         </h2>
-      </div>
+        <p className="text-center text-gray-500 text-sm mt-2">
+          {type === 'login' ? 'Inicia sesión con tu cuenta' : 'Regístrate para comenzar'}
+        </p>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action={action} className="space-y-6">
+        {showMessage && state.type === 'INVALID_CREDENTIALS' && (
+          <Message type="DANGER" message="No autorizado. Verifica tus credenciales." />
+        )}
+
+        <form action={action} className="mt-6 space-y-4">
+          {type === 'signup' && (
+            <>
+              <InputContainer>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Nombre"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="block w-full rounded-md border-gray-300 py-2 px-4 text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                />
+              </InputContainer>
+
+              <InputContainer>
+                <input
+                  id="lastname"
+                  name="lastname"
+                  type="text"
+                  placeholder="Apellidos"
+                  value={formData.lastname}
+                  onChange={handleInputChange}
+                  className="block w-full rounded-md border-gray-300 py-2 px-4 text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
+                />
+              </InputContainer>
+            </>
+          )}
 
           <InputContainer>
             <input
               id="email"
               name="email"
               type="email"
-              placeholder="Email"
-              className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+              placeholder="Correo Electrónico"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="block w-full rounded-md border-gray-300 py-2 px-4 text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
             />
           </InputContainer>
 
@@ -39,8 +109,10 @@ export default function LoginForm() {
               id="wa_id"
               name="wa_id"
               type="tel"
-              placeholder="Celular"
-              className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+              placeholder="Número de WhatsApp"
+              value={formData.wa_id}
+              onChange={handleInputChange}
+              className="block w-full rounded-md border-gray-300 py-2 px-4 text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
             />
           </InputContainer>
 
@@ -49,28 +121,44 @@ export default function LoginForm() {
               id="password"
               name="password"
               type="password"
-              placeholder='password'
+              placeholder="Contraseña"
               required
               autoComplete="current-password"
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="block w-full rounded-md border-gray-300 py-2 px-4 text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-300"
             />
           </InputContainer>
 
+          {type === 'login' && <input type="hidden" name="redirectTo" value={callbackUrl} />}
 
-          <div>
-            <input type="hidden" name="redirectTo" value={callbackUrl} />
-            <button
-              disabled={pending}
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              {pending ? "Iniciando Sesión..." : "Iniciar Sesión"}
-            </button>
-          </div>
+          <button
+            disabled={pending}
+            type="submit"
+            className="flex items-center justify-center w-full rounded-md bg-indigo-600 py-2 text-white font-semibold shadow-md transition duration-200 hover:bg-indigo-500 disabled:bg-indigo-300"
+          >
+            {pending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin mr-2" /> {type === 'login' ? 'Iniciando...' : 'Registrando...'}
+              </>
+            ) : (
+              <>
+                {type === 'login' ? <LogIn className="w-5 h-5 mr-2" /> : <UserPlus className="w-5 h-5 mr-2" />}
+                {type === 'login' ? 'Iniciar Sesión' : 'Registrarse'}
+              </>
+            )}
+          </button>
+
+          <p className="text-center text-gray-500 text-sm mt-4">
+            {type === 'login'
+              ? "¿No tienes cuenta? "
+              : "¿Ya tienes cuenta? "}
+            <a href={type === 'login' ? "/signup" : "/login"} className="text-indigo-600 font-semibold hover:underline">
+              {type === 'login' ? "Regístrate aquí" : "Inicia sesión"}
+            </a>
+          </p>
         </form>
-
-      </div >
-    </div >
-
-  )
+      </div>
+    </div>
+  );
 }
