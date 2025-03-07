@@ -5,7 +5,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAppContext } from "app/app/context/authContext";
 import { EmployeesTable } from "app/app/ui/components/EmployeesTable";
 import SideMenu from "app/app/ui/components/sideMenu";
-import { RefreshCcw } from "lucide-react";
 
 export default function Page() {
     const [shouldAssignUser, setShouldAssignUser] = useState(false);
@@ -14,29 +13,25 @@ export default function Page() {
 
     useEffect(() => {
         if (status === "authenticated" && session?.data?.user) {
-            console.log('************************** USE EFFECT **************************');
             localStorage.setItem("user", JSON.stringify(session.data.user));
             fetchUsers(`/api/user?manager=${session.data.user.id}`);
         }
     }, [status, session]);
 
-    const fetchUsers = useCallback(
-        async (url: string) => {
-            try {
-                const response = await fetch(url, { method: 'GET' });
-                const result = await response.json();
-                setUsers(result.data);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            }
-        }, [users]);
+    const fetchUsers = useCallback(async (url: string) => {
+        try {
+            const response = await fetch(url, { method: 'GET' });
+            const result = await response.json();
+            setUsers(result.data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    }, [setUsers]);
 
     const toggleAssignUsers = () => {
         fetchUsers('/api/user');
-        setShouldAssignUser(true);
+        setShouldAssignUser(prev => !prev);
     };
-
-    console.log('************************** users **************************', users)
 
     if (status === "loading") {
         return (
@@ -63,9 +58,9 @@ export default function Page() {
                             <p className="text-gray-700 text-lg">El usuario no tiene asesores asignados</p>
                             <button
                                 onClick={toggleAssignUsers}
-                                className="flex mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-2 transition duration-300"
+                                className="mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-2 transition duration-300"
                             >
-                                <RefreshCcw /> <span className="mx-2"> Actualizar</span>
+                                Mostrar empleados
                             </button>
                         </div>
                     )}

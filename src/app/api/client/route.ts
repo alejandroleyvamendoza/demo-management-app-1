@@ -1,4 +1,5 @@
 import { PrismaClient, Role } from "@prisma/client";
+import { IClient } from "app/app/module/role/repository/interfaces";
 
 let prisma = new PrismaClient();
 
@@ -25,14 +26,27 @@ export async function GET(req: Request) {
 
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const name: string = body.name;
-  const waId: string = body.wa_id;
+  const bodyClient: IClient = await req.json();
+  const clientId: number = bodyClient.id;
+  const name: string = bodyClient.name;
+  const waId: string = bodyClient.wa_id;
 
-  console.log('CLIENT REQ', body);
+  console.log('CLIENT REQ', bodyClient);
 
-  const client = await prisma.client.create({
-    data: {
+  const client = await prisma.client.upsert({
+    where: {
+      id: clientId
+    },
+    update: {
+      name: bodyClient.name,
+      lastname: bodyClient.lastname,
+      email: bodyClient.email,
+      wa_id: bodyClient.wa_id,
+      status: bodyClient.status,
+      updatedAt: bodyClient.updatedAt,
+      updatedBy: bodyClient.updatedBy,
+    },
+    create: {
       name: name,
       wa_id: waId,
     },
@@ -40,3 +54,6 @@ export async function POST(req: Request) {
 
   return Response.json({ data: client, message: 'SUCCESS', status: 'OK', statusCode: 200 });
 }
+
+
+

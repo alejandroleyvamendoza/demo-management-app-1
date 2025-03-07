@@ -21,8 +21,9 @@ export async function getUsers(managerId: number) {
 
 export async function createUser(req: Request) {
     const body = await req.json();
+    console.log('::::: body', body)
     let salt = bcrypt.genSaltSync(10);
-    let hash = bcrypt.hashSync(body.data.password, salt);
+    let hash = bcrypt.hashSync(body.password, salt);
     const role = await getUserRole('User');
 
     console.log('body', body);
@@ -30,16 +31,16 @@ export async function createUser(req: Request) {
 
     const user = await prisma.user.create({
         data: {
-            name: body.data.name,
-            lastname: body.data.lastname,
-            email: body.data.email,
-            wa_id: body.data.wa_id.slice(-10),
+            name: body.name,
+            lastname: body.lastname,
+            email: body.email,
+            wa_id: body.wa_id.slice(-10),
             role: { connect: { id: role?.id } },
             status: 'ACTIVE',
             profile: {
                 create: {
                     password: hash,
-                    username: body.data.name,
+                    username: body.name,
                 }
             }
         }

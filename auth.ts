@@ -36,7 +36,7 @@ export const { auth, signIn, signOut } = NextAuth(
                     token.role = user?.role?.name
                 }
 
-                console.log(' ::::: user :::::', {user, token});
+                console.log(' ::::: user :::::', { user, token });
                 return token;
             },
             async session({ session, token }) {
@@ -69,25 +69,34 @@ export const { auth, signIn, signOut } = NextAuth(
                         console.log('====================== auth.ts Credentials authorize ======================');
 
                         console.log('::::: Credentials :::::', credentials);
-                        
+
                         const parsedCredentials = z
-                        .object({ email: z.string().email(), password: z.string().min(6) })
-                        .safeParse(credentials);
-                        
+                            .object({ email: z.string().email(), password: z.string().min(6) })
+                            .safeParse(credentials);
+
                         console.log('::::: parsedCredentials :::::', parsedCredentials);
-                        
-                        if (!parsedCredentials.success) return null;
-    
+
+                        if (!parsedCredentials.success) {
+                            console.log('::::: FAILED :::::', parsedCredentials);
+                            return null;
+                        };
+
                         const { email, password } = parsedCredentials.data;
+                        
                         const user: IUser | null = await getUser(email);
-                        if (!user) return null;
-    
+                        if (!user) {
+                            console.log('::::: USUARIO NO ENCONTRADO :::::', parsedCredentials);
+                            return null;
+                        };
+
                         const passwordsMatch = await bcrypt.compare(password, user.profile.password);
                         if (!passwordsMatch) return null;
-    
+
+                        console.log('__;;;;::::::::::::::::')
+
                         return user;
                     } catch (error) {
-                        
+                        console.error("Auth - Credentials authorize: ", error)
                     }
                 },
             }),

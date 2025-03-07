@@ -1,4 +1,4 @@
-import AuthForm from "../ui/login-form";
+import AuthForm from "../ui/authForm";
 import SignupForm from "../ui/signup-form";
 import { Suspense } from 'react';
 

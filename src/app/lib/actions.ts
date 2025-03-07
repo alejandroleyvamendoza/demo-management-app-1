@@ -2,7 +2,7 @@
 
 import { AuthError } from 'next-auth';
 import { signIn, signOut } from '../../../auth';
-import { AuthResult } from '../ui/login-form';
+import { AuthResult } from '../ui/authForm';
 
 export async function authenticate(state: AuthResult, formData: FormData): Promise<AuthResult> {
   console.log('====================== actions.ts authenticate ======================');
