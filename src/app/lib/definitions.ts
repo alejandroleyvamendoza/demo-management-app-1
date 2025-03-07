@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 export interface JWTPayload {
   iat?: number; // Tiempo de emisión
@@ -27,7 +27,32 @@ export const SignupFormSchema = z.object({
       message: 'Contain at least one special character.',
     })
     .trim(),
-})
+});
+
+export const validateSignupForm = async (formData: any): Promise<FormState> => {
+  try {
+    SignupFormSchema.parse(formData);
+    return undefined; // No hay errores, la validación fue exitosa
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const errors: { [key: string]: string[] } = {};
+
+      error.issues.forEach((issue) => {
+        const field = issue.path[0]; // El nombre del campo que falló
+        const message = issue.message; // El mensaje de error
+
+        if (!errors[field]) {
+          errors[field] = [];
+        }
+        errors[field].push(message);
+      });
+
+      return { errors };
+    } else {
+      return { message: 'An unexpected error occurred.' };
+    }
+  }
+}
 
 export type FormState =
   | {

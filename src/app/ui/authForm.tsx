@@ -10,7 +10,7 @@ import { Loader2, UserPlus, LogIn } from 'lucide-react';
 
 export interface AuthResult {
   message: string;
-  type: 'INVALID_CREDENTIALS' | 'SERVER_ERROR' | 'SUCCESS' | null;
+  type: 'INVALID_FIELD' | 'INVALID_CREDENTIALS' | 'SERVER_ERROR' | 'SUCCESS' | null;
 }
 
 interface AuthFormProps {
