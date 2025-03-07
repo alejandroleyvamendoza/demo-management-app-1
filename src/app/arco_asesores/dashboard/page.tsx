@@ -137,16 +137,40 @@ export default function Page() {
 
     if (status === "authenticated") {
         return (
+            // <SideMenu>
+            //     <div className="relative flex justify-center h-screen p-6">
+            //         {users?.length > 0 || shouldAssignUser ? (
+            //             <EmployeesTable users={users} showDropDownOptions={true} showAssignButtons={false} />
+            //         ) : (
+            //             <div className="flex flex-col items-center">
+            //                 <p className="text-gray-700 text-lg">El usuario no tiene asesores asignados</p>
+            //                 <button
+            //                     onClick={toggleAssignUsers}
+            //                     className="mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-2 transition duration-300"
+            //                 >
+            //                     Mostrar empleados
+            //                 </button>
+            //             </div>
+            //         )}
+            //     </div>
+            // </SideMenu>
+
             <SideMenu>
-                <div className="relative flex justify-center h-screen p-6">
+                <div className="relative flex flex-col items-center justify-center min-h-screen p-6 sm:p-8 md:p-10 lg:p-12">
                     {users?.length > 0 || shouldAssignUser ? (
-                        <EmployeesTable users={users} showDropDownOptions={true} showAssignButtons={false} />
+                        <div className="w-full max-w-4xl">
+                            <EmployeesTable
+                                users={users}
+                                showDropDownOptions={true}
+                                showAssignButtons={false}
+                            />
+                        </div>
                     ) : (
-                        <div className="flex flex-col items-center">
-                            <p className="text-gray-700 text-lg">El usuario no tiene asesores asignados</p>
+                        <div className="flex flex-col items-center text-center p-6 bg-white shadow-lg rounded-lg w-full max-w-md">
+                            <p className="text-gray-700 text-lg font-semibold">El usuario no tiene asesores asignados</p>
                             <button
                                 onClick={toggleAssignUsers}
-                                className="mt-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-2 transition duration-300"
+                                className="mt-6 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-6 py-2 transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
                             >
                                 Mostrar empleados
                             </button>
