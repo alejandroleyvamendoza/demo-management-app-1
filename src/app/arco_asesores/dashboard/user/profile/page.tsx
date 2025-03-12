@@ -9,12 +9,12 @@ import SideMenu from "app/app/ui/components/sideMenu";
 export default function Page() {
     const [shouldAssignUser, setShouldAssignUser] = useState(false);
     const { data: session, status } = useSession();
-    const { users, setUsers } = useAppContext();
+    const { selectedUserForUpdate, setSelectedUserForUpdate, } = useAppContext();
 
     useEffect(() => {
         if (status === "authenticated" && session?.data?.user) {
             localStorage.setItem("user", JSON.stringify(session.data.user));
-            fetchUsers(`/api/user?manager=${session.data.user.id}`);
+            fetchUsers(`/api/user/${session.data.selectedUser}`);
         }
     }, [status, session]);
 
@@ -22,7 +22,7 @@ export default function Page() {
         try {
             const response = await fetch(url, { method: 'GET' });
             const result = await response.json();
-            setUsers(result.data);
+            setSelectedUserForUpdate(result.data);
         } catch (error) {
             console.error("Error fetching users:", error);
         }

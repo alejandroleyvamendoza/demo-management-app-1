@@ -1,6 +1,6 @@
 "use client";
 import { useSession, SessionProvider as Provider } from "next-auth/react";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { IUser } from "../module/role/repository/interfaces";
 import { IUser } from 'app/app/module/role/repository/interfaces';
@@ -19,14 +19,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUserForUpdate, setSelectedUserForUpdate] = useState(null);
+
   const session = useSession<boolean>();
 
   const [modalVisible, setModalVisible] = useState(false);
 
+    // Memoizamos el objeto `value`
+    const contextValue = useMemo(
+      () => ({
+        user,
+        setUser,
+        selectedUserForUpdate,
+        setSelectedUserForUpdate,
+        users,
+        setUsers,
+        loading,
+        session,
+        status,
+        modalVisible,
+        setModalVisible
+      }),
+      [user, selectedUserForUpdate, users, loading, session, status, modalVisible]
+    );
+  
+
   console.log('====================== AUTHCONTEXT ======================', { session });
 
   return (
-    <AppContext.Provider value={{ user, setUser, users, setUsers, loading, session, status: session.status, modalVisible, setModalVisible }}>
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
 
@@ -41,6 +62,8 @@ export interface IAppContext {
   setUser: React.Dispatch<React.SetStateAction<IUser>>,
   users: IUser[],
   setUsers: React.Dispatch<React.SetStateAction<IUser[]>>,
+  selectedUserForUpdate: IUser,
+  setSelectedUserForUpdate: React.Dispatch<React.SetStateAction<IUser>>,
   login: any,
   logout: any,
   loading: any,

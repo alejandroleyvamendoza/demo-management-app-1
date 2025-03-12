@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAppContext } from "app/app/context/authContext";
 import { ClientCard } from "./clientCard";
 import { EmployeeCard } from "./employeeCard";
+import Link from "next/link";
 
 export default function EmployeeOtionsDropDown({ users, user, index }) {
 
@@ -19,7 +20,7 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
     const toggleVisibilityClientsCard = () => {
         setShowClientsCard(!showClientsCard);
     };
-    
+
     const toggleVisibilityEmployeesCard = () => {
         setShowEmployeesCard(!showEmployeesCard);
     };
@@ -61,12 +62,12 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
                 role="menu"
             >
                 <div className="p-2">
-                    <button
+                    <Link
+                        href="/arco_asesores/dashboard/user/profile"
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                        role="menuitem"
-                    >
+                        role="menuitem">
                         Editar empleado
-                    </button>
+                    </Link>
 
                     <button onClick={toggleVisibilityClientsCard}
 
