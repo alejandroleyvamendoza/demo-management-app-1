@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EmployeeOtionsDropDown from "./employeeOtionsDropDown";
 import { IUser } from "app/app/module/role/repository/interfaces";
 import { useAppContext } from "app/app/context/authContext";
+import { Message } from "./message";
 
 export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }) => {
 
@@ -9,13 +10,22 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
     const [selectAll, setSelectAll] = useState(false);
     const [loading, setLoading] = useState(false);
     const { session } = useAppContext();
+    const [showMessage, setShowMessage] = useState(false);
 
+    useEffect(() => {
+
+        if (showMessage) {
+            setShowMessage(true);
+            const timer = setTimeout(() => setShowMessage(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showMessage]);
 
     const handleSelectAllChange = () => {
         console.log('selectAll', selectAll);
         setSelectAll(!selectAll);
         setSelectedUsers(selectAll ? [] : users?.map((user: IUser) => user));
-    }; 
+    };
 
     const assignEmployeeToManager = () => {
 
@@ -30,7 +40,8 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
                 },
                 body: JSON.stringify({ data: { users: selectedUsers, user: session.data.data.user }, }),
             }).then((res) => {
-                if (!res.ok) throw new Error("Error al relacionar Empleado con manager");
+                if (!res.ok) throw new Error("Error al relacionar Empleado con manager"); setShowMessage(true);
+                setLoading(false);
                 return res.json();
             }).catch((error) => {
                 console.error("Error fetching users:", error);
@@ -70,10 +81,13 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
 
     if (users) {
         return (
-            <section>
-                <div className='overflow-y-scroll h-2/3'>
-                    <table className="min-w-full divide-y-2 divide-gray-200  text-sm">
-                        <thead className="sticky top-0 bg-white z-10 ltr:text-left rtl:text-right">
+            <section className="w-full max-w-screen-xl mx-auto">
+                {
+                    showMessage && <Message message={"Se realizó la asignación con exito"} type='SUCCESS' key={1} />
+                }
+                <div className="overflow-auto max-h-[70vh]">
+                    <table className="w-full border-collapse border border-gray-300 text-sm">
+                        <thead className="bg-gray-100 sticky top-0">
                             <tr>
                                 <th className="bg-whitespace-nowrap px-4 py-2 font-medium text-gray-900">Asignar</th>
                                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ID</th>
@@ -81,19 +95,18 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
                                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">e-mail</th>
                                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Role</th>
                                 <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Manager</th>
-                                <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>
-                                <th className="px-4 py-2"></th>
+                                {showDropDownOptions && <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Opciones</th>}
                             </tr>
                         </thead>
 
                         <tbody className="divide-y divide-gray-200">
                             {users.map((user: IUser, index: number) => (
-                                <tr key={user.id} className="relative">
-                                    <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                <tr key={user.id} className="hover:bg-gray-50">
+                                    <td className="px-4 py-2 border text-center">
 
                                         <input
-                                            className=
-                                            "whitespace-nowrap px-4 py-2 font-medium text-gray-900"
+                                            className="w-4 h-4"
+                                            // "whitespace-nowrap px-4 py-2 font-medium text-gray-900"
                                             // "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                             type="checkbox"
                                             checked={selectedUsers.includes(user)}
@@ -104,14 +117,16 @@ export const EmployeesTable = ({ users, showDropDownOptions, showAssignButtons }
                                         <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"></label>
 
                                     </td>
-                                    <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{user.id}</td>
-                                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">{`${user.name} ${user.lastname}`}</td>
-                                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user.email}</td>
-                                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user?.role?.name}</td>
-                                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">{user?.manager?.name}</td>
-                                    <td className="whitespace-nowrap px-4 py-2">
-                                        {showDropDownOptions && <EmployeeOtionsDropDown users={users} user={user} index={index} />}
-                                    </td>
+                                    <td className="px-4 py-2 border text-center">{user.id}</td>
+                                    <td className="px-4 py-2 border">{`${user.name} ${user.lastname}`}</td>
+                                    <td className="px-4 py-2 border">{user.email}</td>
+                                    <td className="px-4 py-2 border">{user?.role?.name}</td>
+                                    <td className="px-4 py-2 border">{user?.manager?.name}</td>
+                                    {showDropDownOptions &&
+                                        <td className="whitespace-nowrap px-4 py-2">
+                                            <EmployeeOtionsDropDown users={users} user={user} index={index} />
+                                        </td>
+                                    }
                                 </tr>
                             ))}
                         </tbody>

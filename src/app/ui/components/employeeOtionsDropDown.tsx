@@ -62,12 +62,12 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
                 role="menu"
             >
                 <div className="p-2">
-                    <Link
+                    {/* <Link
                         href="/arco_asesores/dashboard/user/profile"
                         className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         role="menuitem">
                         Editar empleado
-                    </Link>
+                    </Link> */}
 
                     <button onClick={toggleVisibilityClientsCard}
 
