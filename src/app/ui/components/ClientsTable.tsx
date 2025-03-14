@@ -8,14 +8,14 @@ export const ClientsTable = ({ user, clients }: { user: any; clients: IClient[] 
   const [selectAll, setSelectAll] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if (showMessage) {
-  //     setShowMessage(true);
-  //     const timer = setTimeout(() => setShowMessage(false), 5000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [showMessage]);
+    if (showMessage) {
+      setShowMessage(true);
+      const timer = setTimeout(() => setShowMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showMessage]);
 
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
