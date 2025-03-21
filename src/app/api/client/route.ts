@@ -55,5 +55,22 @@ export async function POST(req: Request) {
   return Response.json({ data: client, message: 'SUCCESS', status: 'OK', statusCode: 200 });
 }
 
+export async function DELETE(req: Request) {
+  const bodyClient: IClient = await req.json();
+  const clientId: number = bodyClient.id;
+
+  console.log('CLIENT REQ', bodyClient);
+
+  const client = await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      status: 'DELETED',
+    }
+  });
+
+  return Response.json({ data: client, message: 'SUCCESS', status: 'OK', statusCode: 200 });
+}
 
 

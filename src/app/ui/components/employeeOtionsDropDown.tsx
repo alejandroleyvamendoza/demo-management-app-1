@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useAppContext } from "app/app/context/authContext";
 import { ClientCard } from "./clientCard";
 import { EmployeeCard } from "./employeeCard";
@@ -11,7 +11,7 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
 
     const [showClientsCard, setShowClientsCard] = useState(false);
     const [showEmployeesCard, setShowEmployeesCard] = useState(false);
-    const { modalVisible, setModalVisible } = useAppContext();
+    const { modalVisible, setModalVisible, users: usrs, setUsers  } = useAppContext();
 
     const show = () => {
         setModalVisible(modalVisible === index ? null : index)
@@ -24,6 +24,36 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
     const toggleVisibilityEmployeesCard = () => {
         setShowEmployeesCard(!showEmployeesCard);
     };
+
+    const deleteEmployee = useCallback(async () => {
+        // const headers = {
+        //     Authorization: `Bearer ${API_TOKEN}`,
+        //     'Content-Type': 'application/json'
+        // };
+        const data = {
+            data: { user, }
+        }
+
+        console.log('data', data);
+        try {
+            const response = await fetch('/api/user', {
+                method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+
+            console.log('result', result);
+            // setSelectedUserForUpdate(result.data);
+            // const arrUsers = users.filter((u) => u.id !== result.data.user.id);
+
+            console.log('arrUsers', arrUsers);
+            // setUsers(arrUsers);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    }, []);
+
+
 
     return (
 
@@ -85,29 +115,27 @@ export default function EmployeeOtionsDropDown({ users, user, index }) {
                         Asignar empleados
                     </button>
 
-                    <form method="POST" action="#">
-                        <button
-                            type="submit"
-                            className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-                            role="menuitem"
+                    <button
+                        className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                        role="menuitem"
+                        onClick={() => deleteEmployee()}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="size-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="size-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                            </svg>
-                            Eliminar empleado
-                        </button>
-                    </form>
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                        </svg>
+                        Eliminar empleado
+                    </button>
                 </div>
             </div>
         </div>

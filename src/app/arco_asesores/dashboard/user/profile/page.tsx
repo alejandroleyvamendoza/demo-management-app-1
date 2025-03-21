@@ -26,7 +26,7 @@ export default function Page() {
         } catch (error) {
             console.error("Error fetching users:", error);
         }
-    }, [setUsers]);
+    }, [selectedUserForUpdate]);
 
     const toggleAssignUsers = () => {
         fetchUsers('/api/user');

@@ -36,11 +36,10 @@ export const AuthProvider = ({ children }) => {
         setUsers,
         loading,
         session,
-        status,
         modalVisible,
         setModalVisible
       }),
-      [user, selectedUserForUpdate, users, loading, session, status, modalVisible]
+      [user, selectedUserForUpdate, users, loading, session, modalVisible]
     );
   
 

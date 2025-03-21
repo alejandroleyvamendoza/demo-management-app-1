@@ -3,13 +3,15 @@ import bcrypt from 'bcryptjs';
 import { getUserRole } from "../../role/repository/roleRepository";
 import { IUserDTO } from "app/app/lib/dto/UserDTO";
 import { User } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { IUser } from "../../role/repository/interfaces";
 
 export async function getUsers(managerId: number) {
     let users;
 
     if (managerId) {
         users = await prisma.user.findMany({
-            where: { managerId: managerId, id: { not: managerId } }, include: { role: true, manager: true }
+            where: { managerId: managerId, id: { not: managerId }}, include: { role: true, manager: true }
         });
     } else {
         users = await prisma.user.findMany({ include: { role: true, manager: true } });
@@ -51,3 +53,18 @@ export async function createUser(req: Request) {
     return user;
 }
 
+export async function deleteUser(bodyUser: IUser) {
+
+    console.log(',,,,................,.,.,...', bodyUser);
+
+    const user = await prisma.user.update({
+        where: {
+          id: bodyUser.id
+        },
+        data: {
+          status: 'DELETED',
+        }
+      });
+
+      return user;
+    }
