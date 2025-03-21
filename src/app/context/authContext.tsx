@@ -9,6 +9,7 @@ import { Session } from "next-auth";
 
 // Crear el contexto
 const AppContext: any = createContext({
+  user: null,
   users: null,
   modalVisible: null,
   setModalVisible: () => { }
@@ -25,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-    // Memoizamos el objeto `value`
     const contextValue = useMemo(
       () => ({
         user,

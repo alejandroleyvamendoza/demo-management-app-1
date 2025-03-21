@@ -10,12 +10,13 @@ import { RefreshCcw } from "lucide-react";
 export default function Page() {
     const [shouldAssignUser, setShouldAssignUser] = useState(false);
     const { data: session, status } = useSession();
-    const { users, setUsers } = useAppContext();
+    const { user, setUser, users, setUsers } = useAppContext();
 
     useEffect(() => {
         if (status === "authenticated" && session?.data?.user) {
             console.log('************************** USE EFFECT **************************');
             localStorage.setItem("user", JSON.stringify(session.data.user));
+            setUser(session.data.user);
             fetchUsers(`/api/user?manager=${session.data.user.id}`);
         }
     }, [status, session]);

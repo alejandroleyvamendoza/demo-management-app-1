@@ -9,12 +9,14 @@ import SideMenu from "app/app/ui/components/sideMenu";
 export default function Page() {
     const [shouldAssignUser, setShouldAssignUser] = useState(false);
     const { data: session, status } = useSession();
-    const { selectedUserForUpdate, setSelectedUserForUpdate, } = useAppContext();
+    const { selectedUserForUpdate, setSelectedUserForUpdate, user } = useAppContext();
 
     useEffect(() => {
+
+        console.log('user', user, session?.data?.user);
+
         if (status === "authenticated" && session?.data?.user) {
-            localStorage.setItem("user", JSON.stringify(session.data.user));
-            fetchUsers(`/api/user/${session.data.selectedUser}`);
+            fetchUsers(`/api/user/${user.id || session?.data?.user?.id}`);
         }
     }, [status, session]);
 
@@ -51,7 +53,7 @@ export default function Page() {
         return (
             <SideMenu>
                 <div className="relative flex justify-center h-screen p-6">
-                    {users?.length > 0 || shouldAssignUser ? (
+                    {/* {users?.length > 0 || shouldAssignUser ? (
                         <EmployeesTable users={users} showDropDownOptions={true} showAssignButtons={false} />
                     ) : (
                         <div className="flex flex-col items-center">
@@ -63,7 +65,7 @@ export default function Page() {
                                 Mostrar empleados
                             </button>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </SideMenu>
         );

@@ -11,7 +11,7 @@ export async function getUsers(managerId: number) {
 
     if (managerId) {
         users = await prisma.user.findMany({
-            where: { managerId: managerId, id: { not: managerId }}, include: { role: true, manager: true }
+            where: { managerId: managerId, id: { not: managerId } }, include: { role: true, manager: true }
         });
     } else {
         users = await prisma.user.findMany({ include: { role: true, manager: true } });
@@ -59,12 +59,12 @@ export async function deleteUser(bodyUser: IUser) {
 
     const user = await prisma.user.update({
         where: {
-          id: bodyUser.id
+            id: bodyUser.id
         },
         data: {
-          status: 'DELETED',
+            status: 'DELETED',
         }
-      });
+    });
 
-      return user;
-    }
+    return user;
+}
